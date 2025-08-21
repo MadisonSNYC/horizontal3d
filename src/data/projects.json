@@ -1,0 +1,145 @@
+[
+  {
+    "id": "proj-001",
+    "title": "Mega Agent Camp Opener",
+    "client": "Keller Williams",
+    "categories": ["Event", "Motion", "Corporate"],
+    "slug": "keller-williams-opener",
+    "posterSrc": "/Thumbs/kwthmb.webp",
+    "previewSrc": "/Kellerw/KWTrim.mp4",
+    "durationSec": 15,
+    "description": "Dynamic event opener crafted for Keller Williams' Mega Agent Camp, featuring bold motion graphics and inspiring visuals to energize top performers."
+  },
+  {
+    "id": "proj-002",
+    "title": "Utility Account Video",
+    "client": "Publix",
+    "categories": ["Retail", "Motion", "Commercial"],
+    "slug": "publix-utility",
+    "posterSrc": "/Thumbs/Pubthmb.webp",
+    "previewSrc": "/Publixs/publix_01_utilityvideo_account (1080p).mp4",
+    "durationSec": 12,
+    "description": "Engaging utility account video for Publix, seamlessly blending retail storytelling with motion design to enhance customer experience."
+  },
+  {
+    "id": "proj-003",
+    "title": "Brand Film 2025",
+    "client": "Ravie",
+    "categories": ["Branding", "Motion", "Showreel"],
+    "slug": "ravie-brand-film",
+    "posterSrc": "/Thumbs/Ozonethmb1.webp",
+    "previewSrc": "/Ravie Brand Film 2025_v03.mp4",
+    "durationSec": 10,
+    "description": "Our 2025 brand film showcasing Ravie's creative vision, combining cutting-edge motion graphics with powerful storytelling."
+  },
+  {
+    "id": "proj-004",
+    "title": "2024 Showreel",
+    "client": "Ravie Studio",
+    "categories": ["Portfolio", "Motion", "Creative"],
+    "slug": "ravie-reel-2024",
+    "posterSrc": "/Thumbs/ososthmb.webp",
+    "previewSrc": "/Ravie/ravie_reel_2024_-_h (1080p).mp4",
+    "durationSec": 14,
+    "description": "A curated collection of our best work from 2024, demonstrating versatility across motion design, branding, and digital experiences."
+  },
+  {
+    "id": "proj-005",
+    "title": "Crypto Platform Launch",
+    "client": "Coinbase",
+    "categories": ["Finance", "Digital", "Motion"],
+    "slug": "coinbase-launch",
+    "posterSrc": "/Thumbs/CoinbaseThumbnail.webp",
+    "previewSrc": "/Kellerw/KWTrim.mp4",
+    "durationSec": 13,
+    "description": "Bold motion graphics campaign for Coinbase, translating complex crypto concepts into accessible, visually striking narratives.",
+    "media": [
+      { "type": "image", "src": "/Coinbase/CoinbaseHero.webp", "alt": "Coinbase Hero" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "image", "src": "/Coinbase/cb4.webp", "alt": "Coinbase Scene 1" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "image", "src": "/Coinbase/cb5.webp", "alt": "Coinbase Scene 2" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "image", "src": "/Coinbase/cb6.webp", "alt": "Coinbase Scene 3" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "video", "src": "/Kellerw/KWTrim.mp4", "poster": "/Thumbs/kwthmb.webp" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "image", "src": "/Coinbase/cb7.webp", "alt": "Coinbase Scene 4" },
+      { "type": "image", "src": "/test.png", "alt": "Test" },
+      { "type": "image", "src": "/Coinbase/cb8.webp", "alt": "Coinbase Scene 5" }
+    ]
+  },
+  {
+    "id": "proj-006",
+    "title": "Gaming Platform UI",
+    "client": "GamePlan",
+    "categories": ["Gaming", "Digital", "UX"],
+    "slug": "gameplan-ui",
+    "posterSrc": "/Thumbs/gameplanthmb.webp",
+    "previewSrc": "/Publixs/publix_01_utilityvideo_account (1080p).mp4",
+    "durationSec": 11,
+    "description": "Immersive UI design for GamePlan's gaming platform, featuring dynamic animations and intuitive user flows."
+  },
+  {
+    "id": "proj-007",
+    "title": "Anime Streaming Experience",
+    "client": "Crunchyroll",
+    "categories": ["Entertainment", "Digital", "Motion"],
+    "slug": "crunchyroll-experience",
+    "posterSrc": "/Thumbs/crunchyrollthmb.webp",
+    "previewSrc": "/Ravie Brand Film 2025_v03.mp4",
+    "durationSec": 15
+  },
+  {
+    "id": "proj-008",
+    "title": "Loop Animations",
+    "client": "Loops Studio",
+    "categories": ["Motion", "Animation", "Creative"],
+    "slug": "loops-studio",
+    "posterSrc": "/Thumbs/Loopsthumb.webp",
+    "previewSrc": "/Ravie/ravie_reel_2024_-_h (1080p).mp4",
+    "durationSec": 10
+  },
+  {
+    "id": "proj-009",
+    "title": "Restaurant Campaign",
+    "client": "Chick-fil-A",
+    "categories": ["Food", "Commercial", "Motion"],
+    "slug": "chick-fil-a-campaign",
+    "posterSrc": "/Thumbs/cfathmb.webp",
+    "previewSrc": "/Kellerw/KWTrim.mp4",
+    "durationSec": 12
+  },
+  {
+    "id": "proj-010",
+    "title": "Music Video Visuals",
+    "client": "Jhené Aiko",
+    "categories": ["Music", "Creative", "Motion"],
+    "slug": "jhene-aiko-visuals",
+    "posterSrc": "/Thumbs/JheneThmb.webp",
+    "previewSrc": "/Publixs/publix_01_utilityvideo_account (1080p).mp4",
+    "durationSec": 14
+  },
+  {
+    "id": "proj-011",
+    "title": "Ozone Experience",
+    "client": "Ozone Studio",
+    "categories": ["Art", "Installation", "Digital"],
+    "slug": "ozone-installation",
+    "posterSrc": "/Thumbs/Ozonethmb1.webp",
+    "previewSrc": "/Ravie Brand Film 2025_v03.mp4",
+    "durationSec": 13,
+    "description": "Immersive digital art installation exploring the boundaries between physical and virtual spaces through dynamic projections."
+  },
+  {
+    "id": "proj-012",
+    "title": "Social Campaign",
+    "client": "OSO Studios",
+    "categories": ["Social", "Digital", "Motion"],
+    "slug": "oso-social",
+    "posterSrc": "/Thumbs/ososthmb.webp",
+    "previewSrc": "/Ravie/ravie_reel_2024_-_h (1080p).mp4",
+    "durationSec": 15,
+    "description": "Vibrant social media campaign for OSO Studios, crafted to maximize engagement through bold visuals and dynamic transitions."
+  }
+]
