@@ -177,15 +177,15 @@ export default function PerspectiveGallery() {
         
         /* Individual panel sizes */
         .fold-panel-0 {
-          height: 22.5%;
+          height: 25%;
         }
         
         .fold-panel-1 {
-          height: 55%;
+          height: 50%;
         }
         
         .fold-panel-2 {
-          height: 22.5%;
+          height: 25%;
         }
         
         .fold-content {
@@ -202,36 +202,38 @@ export default function PerspectiveGallery() {
           flex-shrink: 0;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-          padding: 20px;
+          gap: 20px;
+          padding: 40px;
+          align-content: center;
+          box-sizing: border-box;
         }
         
         /* CLEAN DEPTH - Z-axis layering */
         .fold-panel-0 {
           top: 0;
-          transform: translate3d(0, 0, 100px) scale(0.85);
+          transform: translate3d(0, 0, 50px);
           z-index: 4;
           box-shadow: 0 15px 40px rgba(0,0,0,0.18);
         }
         
         .fold-panel-1 {
-          top: 22.5%;
-          transform: translate3d(0, 0, 150px) scale(1.1);
+          top: 25%;
+          transform: translate3d(0, 0, 100px);
           z-index: 3;
           box-shadow: 0 20px 50px rgba(0,0,0,0.22);
         }
         
         .fold-panel-2 {
-          top: 77.5%;
-          transform: translate3d(0, 0, 100px) scale(0.85);
+          top: 75%;
+          transform: translate3d(0, 0, 50px);
           z-index: 2;
           box-shadow: 0 8px 20px rgba(0,0,0,0.11);
         }
         
-        /* Each panel shows different content offset for vertical scroll */
+        /* Each panel shows different content offset for seamless vertical scroll */
         .fold-panel-0 .fold-content { margin-top: 0; }
-        .fold-panel-1 .fold-content { margin-top: -22.5vh; }
-        .fold-panel-2 .fold-content { margin-top: -77.5vh; }
+        .fold-panel-1 .fold-content { margin-top: -25vh; }
+        .fold-panel-2 .fold-content { margin-top: -75vh; }
         
         /* Row containers */
         .row-container {
@@ -247,11 +249,11 @@ export default function PerspectiveGallery() {
         
         .tile-3d {
           background: var(--tile-color);
-          border-radius: 8px;
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
+          font-size: 18px;
           font-weight: bold;
           color: white;
           text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -260,7 +262,8 @@ export default function PerspectiveGallery() {
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           aspect-ratio: 16 / 10;
           width: 100%;
-          height: auto;
+          max-width: 400px;
+          justify-self: center;
         }
         
         .tile-3d:hover {
