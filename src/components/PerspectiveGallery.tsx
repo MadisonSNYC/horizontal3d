@@ -69,16 +69,16 @@ export default function PerspectiveGallery() {
   })
 
   const [rowSettings, setRowSettings] = useState<{ topBottom: RowSettings; middle: RowSettings }>({
-    topBottom: { translateZ: 228, rotateX: 19, rotateY: 0, scale: 0.95 },
-    middle: { translateZ: 150, rotateX: 0, rotateY: 0, scale: 1.05 }
+    topBottom: { translateZ: 100, rotateX: 45, rotateY: 0, scale: 0.8 },
+    middle: { translateZ: 200, rotateX: 0, rotateY: 0, scale: 1.2 }
   })
 
   const [spacingSettings, setSpacingSettings] = useState<SpacingSettings>({
     rowGap: 4,
     colGap: 10,
-    topRowHeight: 25,
-    middleRowHeight: 50,
-    bottomRowHeight: 25,
+    topRowHeight: 20,
+    middleRowHeight: 40,
+    bottomRowHeight: 20,
     containerWidth: 84,
     containerHeight: 82
   })
@@ -262,6 +262,7 @@ export default function PerspectiveGallery() {
           row-gap: ${spacingSettings.rowGap}px;
           padding: 15px;
           box-sizing: border-box;
+          place-items: center;
         }
         
         /* Middle panel gets proportionally scaled spacing to maintain gaps with larger tiles */
@@ -307,10 +308,31 @@ export default function PerspectiveGallery() {
           box-shadow: 0 ${panelVisuals.bottomShadow}px ${panelVisuals.bottomShadow * 2.5}px rgba(0,0,0,${panelVisuals.bottomShadow * 0.01});
         }
         
-        /* Each panel shows different content offset for seamless vertical scroll */
-        .fold-panel-0 .fold-content { margin-top: 0; }
-        .fold-panel-1 .fold-content { margin-top: -25vh; }
-        .fold-panel-2 .fold-content { margin-top: -75vh; }
+        /* Each panel shows different rows */
+        /* Top panel only shows top row */
+        .fold-panel-0 .tile-wrapper {
+          grid-template-rows: 1fr;
+        }
+        .fold-panel-0 .tile-3d:nth-child(n+4) {
+          display: none;
+        }
+        
+        /* Middle panel only shows middle row */
+        .fold-panel-1 .tile-wrapper {
+          grid-template-rows: 1fr;
+        }
+        .fold-panel-1 .tile-3d:nth-child(-n+3),
+        .fold-panel-1 .tile-3d:nth-child(n+7) {
+          display: none;
+        }
+        
+        /* Bottom panel only shows bottom row */
+        .fold-panel-2 .tile-wrapper {
+          grid-template-rows: 1fr;
+        }
+        .fold-panel-2 .tile-3d:nth-child(-n+6) {
+          display: none;
+        }
         
         /* Row containers */
         .row-container {
