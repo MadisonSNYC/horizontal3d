@@ -57,6 +57,46 @@ export default function PerspectiveGallery() {
   const scrollPositionRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [currentTileIndex, setCurrentTileIndex] = useState(0)
+  
+  // Dev controls state
+  const [settings, setSettings] = useState<PerspectiveSettings>({
+    perspective: 1200,
+    perspectiveOriginX: 50,
+    perspectiveOriginY: 50,
+    rotateX: 0,
+    rotateY: 0,
+    rotateZ: 0
+  })
+
+  const [rowSettings, setRowSettings] = useState<{ topBottom: RowSettings; middle: RowSettings }>({
+    topBottom: { translateZ: 100, rotateX: 25, rotateY: 0, scale: 0.95 },
+    middle: { translateZ: 150, rotateX: 0, rotateY: 0, scale: 1.05 }
+  })
+
+  const [spacingSettings, setSpacingSettings] = useState<SpacingSettings>({
+    rowGap: 10,
+    colGap: 10,
+    topRowHeight: 25,
+    middleRowHeight: 50,
+    bottomRowHeight: 25,
+    containerWidth: 84,
+    containerHeight: 82
+  })
+
+  const updateSetting = (key: keyof PerspectiveSettings, value: number) => {
+    setSettings(prev => ({ ...prev, [key]: value }))
+  }
+
+  const updateRowSetting = (row: 'topBottom' | 'middle', key: keyof RowSettings, value: number) => {
+    setRowSettings(prev => ({
+      ...prev,
+      [row]: { ...prev[row], [key]: value }
+    }))
+  }
+
+  const updateSpacingSetting = (key: keyof SpacingSettings, value: number) => {
+    setSpacingSettings(prev => ({ ...prev, [key]: value }))
+  }
 
   // Initialize 3D fold effect (exact pattern from original)
   useEffect(() => {
@@ -156,10 +196,15 @@ export default function PerspectiveGallery() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 84%;
-          height: 82%;
-          perspective: 689px;
+          width: ${spacingSettings.containerWidth}%;
+          height: ${spacingSettings.containerHeight}%;
+          perspective: ${settings.perspective}px;
+          perspective-origin: ${settings.perspectiveOriginX}% ${settings.perspectiveOriginY}%;
           transform-style: preserve-3d;
+          transform: translate(-50%, -50%) 
+                     rotateX(${settings.rotateX}deg)
+                     rotateY(${settings.rotateY}deg)
+                     rotateZ(${settings.rotateZ}deg);
         }
         
         /* 3D fold panels (updated for vertical scroll) */
@@ -168,24 +213,21 @@ export default function PerspectiveGallery() {
           width: 100%;
           overflow: hidden;
           left: 0;
-          background: #fff;
-          box-shadow: 
-            0 10px 30px rgba(0,0,0,0.15),
-            0 5px 10px rgba(0,0,0,0.1);
+          background: transparent;
           border: none;
         }
         
         /* Individual panel sizes */
         .fold-panel-0 {
-          height: 25%;
+          height: ${spacingSettings.topRowHeight}%;
         }
         
         .fold-panel-1 {
-          height: 50%;
+          height: ${spacingSettings.middleRowHeight}%;
         }
         
         .fold-panel-2 {
-          height: 25%;
+          height: ${spacingSettings.bottomRowHeight}%;
         }
         
         .fold-content {
@@ -198,36 +240,44 @@ export default function PerspectiveGallery() {
         
         .tile-wrapper {
           width: 100%;
-          height: 100vh;
-          flex-shrink: 0;
+          height: 100%;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-          padding: 40px;
-          align-content: center;
+          grid-template-rows: repeat(3, 1fr);
+          gap: 8px;
+          padding: 15px;
           box-sizing: border-box;
         }
         
-        /* CLEAN DEPTH - Z-axis layering */
+        /* CLEAN DEPTH - Z-axis layering with 3D fold effect (adapted from original) */
         .fold-panel-0 {
           top: 0;
-          transform: translate3d(0, 0, 50px);
+          transform-origin: bottom center;
+          transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
+                     rotateX(${rowSettings.topBottom.rotateX}deg)
+                     rotateY(${rowSettings.topBottom.rotateY}deg)
+                     scale(${rowSettings.topBottom.scale});
           z-index: 4;
-          box-shadow: 0 15px 40px rgba(0,0,0,0.18);
         }
         
         .fold-panel-1 {
-          top: 25%;
-          transform: translate3d(0, 0, 100px);
+          top: ${spacingSettings.topRowHeight}%;
+          transform-origin: center center;
+          transform: translate3d(0, 0, ${rowSettings.middle.translateZ}px)
+                     rotateX(${rowSettings.middle.rotateX}deg)
+                     rotateY(${rowSettings.middle.rotateY}deg)
+                     scale(${rowSettings.middle.scale});
           z-index: 3;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.22);
         }
         
         .fold-panel-2 {
-          top: 75%;
-          transform: translate3d(0, 0, 50px);
+          top: ${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}%;
+          transform-origin: top center;
+          transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
+                     rotateX(-${rowSettings.topBottom.rotateX}deg)
+                     rotateY(${rowSettings.topBottom.rotateY}deg)
+                     scale(${rowSettings.topBottom.scale});
           z-index: 2;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.11);
         }
         
         /* Each panel shows different content offset for seamless vertical scroll */
@@ -266,9 +316,6 @@ export default function PerspectiveGallery() {
           justify-self: center;
         }
         
-        .tile-3d:hover {
-          transform: scale(1.05);
-        }
         
         /* Gallery Controls (matching original) */
         .gallery-controls {
@@ -306,6 +353,80 @@ export default function PerspectiveGallery() {
           color: #666;
           letter-spacing: 0.05em;
         }
+        
+        /* Control Panel */
+        .control-panel {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: rgba(0, 0, 0, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 20px;
+          z-index: 1000;
+          color: white;
+          font-size: 11px;
+          width: 320px;
+          max-height: 90vh;
+          overflow-y: auto;
+          backdrop-filter: blur(10px);
+        }
+        
+        .control-panel h3 {
+          margin: 0 0 15px 0;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          color: #0066ff;
+        }
+        
+        .control-panel h4 {
+          margin: 15px 0 10px 0;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          color: #00ccff;
+          padding-top: 15px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-group {
+          margin-bottom: 12px;
+        }
+        
+        .control-group label {
+          display: block;
+          margin-bottom: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          opacity: 0.8;
+          font-size: 10px;
+        }
+        
+        .control-group input[type="range"] {
+          width: 100%;
+          height: 4px;
+          background: rgba(255, 255, 255, 0.1);
+          outline: none;
+          -webkit-appearance: none;
+          border-radius: 2px;
+        }
+        
+        .control-group input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 12px;
+          height: 12px;
+          background: #0066ff;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+        
+        .control-value {
+          display: inline-block;
+          margin-left: 8px;
+          color: #0066ff;
+          font-weight: bold;
+        }
       `}</style>
 
       <div ref={containerRef} className="perspective-container">
@@ -315,20 +436,18 @@ export default function PerspectiveGallery() {
             {[0, 1, 2].map(panelIndex => (
               <div key={panelIndex} className={`fold-panel fold-panel-${panelIndex}`}>
                 <div className="fold-content">
-                  {SAMPLE_PROJECT.tiles.map((tile, tileIndex) => (
-                    <div key={tileIndex} className="tile-wrapper">
-                      {/* Each tile wrapper contains 3 tiles horizontally */}
-                      {[0, 1, 2].map(colIndex => (
-                        <div
-                          key={`tile-${colIndex}`}
-                          className="tile-3d"
-                          style={{ '--tile-color': SAMPLE_PROJECT.tiles[(tileIndex * 3 + colIndex) % SAMPLE_PROJECT.tiles.length]?.color || '#333' } as React.CSSProperties}
-                        >
-                          {SAMPLE_PROJECT.tiles[(tileIndex * 3 + colIndex) % SAMPLE_PROJECT.tiles.length]?.title || `TILE ${colIndex + 1}`}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                  <div className="tile-wrapper">
+                    {/* Single 3x3 grid of tiles */}
+                    {SAMPLE_PROJECT.tiles.map((tile, index) => (
+                      <div
+                        key={`tile-${index}`}
+                        className="tile-3d"
+                        style={{ '--tile-color': tile.color } as React.CSSProperties}
+                      >
+                        {tile.title}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -346,6 +465,185 @@ export default function PerspectiveGallery() {
           <button className="control-btn" onClick={() => window.nextTile?.()}>
             NEXT →
           </button>
+        </div>
+        
+        {/* Control Panel */}
+        <div className="control-panel">
+          <h3>3D Perspective Controls</h3>
+          
+          <h4>Global Perspective</h4>
+          <div className="control-group">
+            <label>
+              Perspective
+              <span className="control-value">{settings.perspective}px</span>
+            </label>
+            <input
+              type="range"
+              min="200"
+              max="3000"
+              value={settings.perspective}
+              onChange={(e) => updateSetting('perspective', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Origin X
+              <span className="control-value">{settings.perspectiveOriginX}%</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={settings.perspectiveOriginX}
+              onChange={(e) => updateSetting('perspectiveOriginX', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Origin Y
+              <span className="control-value">{settings.perspectiveOriginY}%</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={settings.perspectiveOriginY}
+              onChange={(e) => updateSetting('perspectiveOriginY', Number(e.target.value))}
+            />
+          </div>
+          
+          <h4>Top/Bottom Panels</h4>
+          <div className="control-group">
+            <label>
+              Rotate X
+              <span className="control-value">{rowSettings.topBottom.rotateX}°</span>
+            </label>
+            <input
+              type="range"
+              min="-90"
+              max="90"
+              value={rowSettings.topBottom.rotateX}
+              onChange={(e) => updateRowSetting('topBottom', 'rotateX', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Translate Z
+              <span className="control-value">{rowSettings.topBottom.translateZ}px</span>
+            </label>
+            <input
+              type="range"
+              min="-300"
+              max="300"
+              value={rowSettings.topBottom.translateZ}
+              onChange={(e) => updateRowSetting('topBottom', 'translateZ', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Scale
+              <span className="control-value">{rowSettings.topBottom.scale.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min="0.5"
+              max="1.5"
+              step="0.01"
+              value={rowSettings.topBottom.scale}
+              onChange={(e) => updateRowSetting('topBottom', 'scale', Number(e.target.value))}
+            />
+          </div>
+          
+          <h4>Middle Panel</h4>
+          <div className="control-group">
+            <label>
+              Rotate X
+              <span className="control-value">{rowSettings.middle.rotateX}°</span>
+            </label>
+            <input
+              type="range"
+              min="-90"
+              max="90"
+              value={rowSettings.middle.rotateX}
+              onChange={(e) => updateRowSetting('middle', 'rotateX', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Translate Z
+              <span className="control-value">{rowSettings.middle.translateZ}px</span>
+            </label>
+            <input
+              type="range"
+              min="-300"
+              max="300"
+              value={rowSettings.middle.translateZ}
+              onChange={(e) => updateRowSetting('middle', 'translateZ', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Scale
+              <span className="control-value">{rowSettings.middle.scale.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min="0.5"
+              max="1.5"
+              step="0.01"
+              value={rowSettings.middle.scale}
+              onChange={(e) => updateRowSetting('middle', 'scale', Number(e.target.value))}
+            />
+          </div>
+          
+          <h4>Panel Sizing</h4>
+          <div className="control-group">
+            <label>
+              Top Panel Height
+              <span className="control-value">{spacingSettings.topRowHeight}%</span>
+            </label>
+            <input
+              type="range"
+              min="10"
+              max="40"
+              value={spacingSettings.topRowHeight}
+              onChange={(e) => updateSpacingSetting('topRowHeight', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Middle Panel Height
+              <span className="control-value">{spacingSettings.middleRowHeight}%</span>
+            </label>
+            <input
+              type="range"
+              min="30"
+              max="70"
+              value={spacingSettings.middleRowHeight}
+              onChange={(e) => updateSpacingSetting('middleRowHeight', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Bottom Panel Height
+              <span className="control-value">{spacingSettings.bottomRowHeight}%</span>
+            </label>
+            <input
+              type="range"
+              min="10"
+              max="40"
+              value={spacingSettings.bottomRowHeight}
+              onChange={(e) => updateSpacingSetting('bottomRowHeight', Number(e.target.value))}
+            />
+          </div>
         </div>
       </div>
     </>
