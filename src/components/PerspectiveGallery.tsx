@@ -70,7 +70,7 @@ export default function PerspectiveGallery() {
   
   // Dev controls state
   const [settings, setSettings] = useState<PerspectiveSettings>({
-    perspective: 1200,
+    perspective: 2000,
     perspectiveOriginX: 50,
     perspectiveOriginY: 50,
     rotateX: 0,
@@ -79,18 +79,18 @@ export default function PerspectiveGallery() {
   })
 
   const [rowSettings, setRowSettings] = useState<{ topBottom: RowSettings; middle: RowSettings }>({
-    topBottom: { translateZ: 100, rotateX: 45, rotateY: 0, scale: 0.8 },
-    middle: { translateZ: 200, rotateX: 0, rotateY: 0, scale: 1.2 }
+    topBottom: { translateZ: 50, rotateX: 15, rotateY: 0, scale: 0.98 },
+    middle: { translateZ: 100, rotateX: 0, rotateY: 0, scale: 1.0 }
   })
 
   const [spacingSettings, setSpacingSettings] = useState<SpacingSettings>({
     rowGap: 4,
     colGap: 10,
-    topRowHeight: 20,
-    middleRowHeight: 40,
-    bottomRowHeight: 20,
-    containerWidth: 84,
-    containerHeight: 82
+    topRowHeight: 33,
+    middleRowHeight: 34,
+    bottomRowHeight: 33,
+    containerWidth: 90,
+    containerHeight: 85
   })
   
   const [tileSize, setTileSize] = useState(400) // Base tile max-width
@@ -243,17 +243,17 @@ export default function PerspectiveGallery() {
           border: none;
         }
         
-        /* Individual panel sizes with slight overlap to prevent gaps */
+        /* Individual panel sizes */
         .fold-panel-0 {
-          height: calc(${spacingSettings.topRowHeight}% + 2px);
+          height: ${spacingSettings.topRowHeight}%;
         }
         
         .fold-panel-1 {
-          height: calc(${spacingSettings.middleRowHeight}% + 2px);
+          height: ${spacingSettings.middleRowHeight}%;
         }
         
         .fold-panel-2 {
-          height: calc(${spacingSettings.bottomRowHeight}% + 2px);
+          height: ${spacingSettings.bottomRowHeight}%;
         }
         
         .fold-content {
@@ -282,41 +282,35 @@ export default function PerspectiveGallery() {
           row-gap: ${spacingSettings.rowGap * rowSettings.middle.scale}px;
         }
         
-        /* CLEAN DEPTH - Z-axis layering with 3D fold effect (adapted from original) */
+        /* Seamless 3D fold effect with smooth transitions */
         .fold-panel-0 {
-          top: calc(0% + ${panelVisuals.panelGap}px);
+          top: 0;
           transform-origin: bottom center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(${rowSettings.topBottom.rotateX}deg)
-                     rotateY(${rowSettings.topBottom.rotateY}deg)
                      scale(${rowSettings.topBottom.scale});
-          z-index: 4;
+          z-index: 1;
           opacity: ${panelVisuals.topOpacity};
-          box-shadow: 0 ${panelVisuals.topShadow}px ${panelVisuals.topShadow * 2.5}px rgba(0,0,0,${panelVisuals.topShadow * 0.012});
         }
         
         .fold-panel-1 {
-          top: calc(${spacingSettings.topRowHeight}% + ${panelVisuals.panelGap}px);
+          top: ${spacingSettings.topRowHeight}%;
           transform-origin: center center;
           transform: translate3d(0, 0, ${rowSettings.middle.translateZ}px)
                      rotateX(${rowSettings.middle.rotateX}deg)
-                     rotateY(${rowSettings.middle.rotateY}deg)
                      scale(${rowSettings.middle.scale});
-          z-index: 3;
+          z-index: 2;
           opacity: ${panelVisuals.middleOpacity};
-          box-shadow: 0 ${panelVisuals.middleShadow}px ${panelVisuals.middleShadow * 2.5}px rgba(0,0,0,${panelVisuals.middleShadow * 0.011});
         }
         
         .fold-panel-2 {
-          top: calc(${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}% + ${panelVisuals.panelGap * 2}px);
+          top: ${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}%;
           transform-origin: top center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(-${rowSettings.topBottom.rotateX}deg)
-                     rotateY(${rowSettings.topBottom.rotateY}deg)
                      scale(${rowSettings.topBottom.scale});
-          z-index: 2;
+          z-index: 1;
           opacity: ${panelVisuals.bottomOpacity};
-          box-shadow: 0 ${panelVisuals.bottomShadow}px ${panelVisuals.bottomShadow * 2.5}px rgba(0,0,0,${panelVisuals.bottomShadow * 0.01});
         }
         
         /* Each panel shows the same scrolling content but from different offsets */
@@ -363,17 +357,11 @@ export default function PerspectiveGallery() {
           transform-origin: center center;
         }
         
-        /* Tiles in middle panel are larger */
-        .fold-panel-1 .tile-3d {
-          max-width: calc(${tileSize}px * 1.3);
-          font-size: 20px;
-        }
-        
-        /* Tiles in top/bottom panels are smaller */
+        /* Tiles maintain consistent size across panels for seamless flow */
         .fold-panel-0 .tile-3d,
+        .fold-panel-1 .tile-3d,
         .fold-panel-2 .tile-3d {
-          max-width: calc(${tileSize}px * 0.9);
-          font-size: 16px;
+          max-width: ${tileSize}px;
         }
         
         
