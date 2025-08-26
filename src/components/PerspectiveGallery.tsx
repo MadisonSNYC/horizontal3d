@@ -132,8 +132,8 @@ export default function PerspectiveGallery() {
 
       const panels = wrapper.querySelectorAll('.fold-panel')
       const totalRows = Math.ceil(SAMPLE_PROJECT.tiles.length / 3)
-      const rowHeight = 200 // Approximate height of each row
-      const scrollPerRow = rowHeight
+      const rowHeight = 250 // Match the grid row height
+      const scrollPerRow = rowHeight + 4 // Include gap
 
       let currentScroll = 0
       let targetScroll = 0
@@ -277,18 +277,13 @@ export default function PerspectiveGallery() {
           place-items: center;
         }
         
-        /* Different grid settings for each panel */
+        /* Same grid layout for all panels to maintain alignment */
         .fold-panel-0 .tile-wrapper,
+        .fold-panel-1 .tile-wrapper,
         .fold-panel-2 .tile-wrapper {
-          grid-auto-rows: 100px;
+          grid-auto-rows: 250px;  /* Uniform row height */
           column-gap: ${spacingSettings.colGap}px;
-          row-gap: 10px;
-        }
-        
-        .fold-panel-1 .tile-wrapper {
-          grid-auto-rows: 300px;
-          column-gap: ${spacingSettings.colGap * 2}px;
-          row-gap: 30px;
+          row-gap: ${spacingSettings.rowGap}px;
         }
         
         /* Seamless 3D fold effect with smooth transitions */
@@ -322,20 +317,20 @@ export default function PerspectiveGallery() {
           opacity: ${panelVisuals.bottomOpacity};
         }
         
-        /* Initial content offsets for proper alignment */
+        /* Content offsets to create continuous flow */
         .fold-panel-0 .fold-content { 
-          /* Top panel starts at row 1 */
+          /* Top panel shows content from the top */
           margin-top: 0;
         }
         
         .fold-panel-1 .fold-content { 
-          /* Middle panel starts showing row 2 (180px row + 20px gap) */
-          margin-top: -200px;
+          /* Middle panel continues from where top panel ends */
+          margin-top: calc(-${spacingSettings.topRowHeight}vh);
         }
         
         .fold-panel-2 .fold-content { 
-          /* Bottom panel starts showing row 3 (2 rows * 200px each) */
-          margin-top: -400px;
+          /* Bottom panel continues from where middle panel ends */
+          margin-top: calc(-${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}vh);
         }
         
         /* Row containers */
@@ -367,17 +362,17 @@ export default function PerspectiveGallery() {
           transform-origin: center center;
         }
         
-        /* Different tile sizes per panel */
+        /* Different tile sizes per panel but maintaining grid alignment */
         .fold-panel-0 .tile-3d,
         .fold-panel-2 .tile-3d {
           max-width: calc(${tileSize}px * 0.5);
-          height: 80px;
+          height: 140px;  /* Fill more of the grid cell */
           font-size: 14px;
         }
         
         .fold-panel-1 .tile-3d {
           max-width: calc(${tileSize}px * 1.75);
-          height: 280px;
+          height: 240px;  /* Nearly fill the grid cell */
           font-size: 24px;
           font-weight: bold;
         }
