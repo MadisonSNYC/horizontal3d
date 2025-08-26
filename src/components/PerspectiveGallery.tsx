@@ -241,6 +241,7 @@ export default function PerspectiveGallery() {
           left: 0;
           background: ${panelVisuals.panelBackground};
           border: none;
+          clip-path: inset(0 0 0 0);
         }
         
         /* Individual panel sizes */
@@ -268,10 +269,10 @@ export default function PerspectiveGallery() {
           width: 100%;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          grid-auto-rows: minmax(150px, auto);
+          grid-auto-rows: 180px;
           column-gap: ${spacingSettings.colGap}px;
-          row-gap: ${spacingSettings.rowGap}px;
-          padding: 15px;
+          row-gap: 20px;
+          padding: 20px;
           box-sizing: border-box;
           place-items: center;
         }
@@ -320,12 +321,12 @@ export default function PerspectiveGallery() {
         }
         
         .fold-panel-1 .fold-content { 
-          /* Middle panel starts showing row 2 */
+          /* Middle panel starts showing row 2 (180px row + 20px gap) */
           margin-top: -200px;
         }
         
         .fold-panel-2 .fold-content { 
-          /* Bottom panel starts showing row 3 */
+          /* Bottom panel starts showing row 3 (2 rows * 200px each) */
           margin-top: -400px;
         }
         
@@ -355,8 +356,10 @@ export default function PerspectiveGallery() {
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
           aspect-ratio: 16 / 9;  /* Video format */
           width: 100%;
+          height: 160px;
           max-width: ${tileSize}px;
           justify-self: center;
+          align-self: center;
           transform-origin: center center;
         }
         
