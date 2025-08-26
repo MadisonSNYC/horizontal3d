@@ -143,7 +143,7 @@ export default function PerspectiveGallery() {
         panels.forEach((panel, index) => {
           const content = panel.querySelector('.fold-content') as HTMLElement
           if (content) {
-            // All panels show the same content position for synchronized scrolling
+            // All panels scroll in sync but with their initial offsets
             content.style.transform = `translateY(${-position}px)`
           }
         })
@@ -313,17 +313,20 @@ export default function PerspectiveGallery() {
           opacity: ${panelVisuals.bottomOpacity};
         }
         
-        /* Each panel shows the same scrolling content but from different offsets */
+        /* Initial content offsets for proper alignment */
         .fold-panel-0 .fold-content { 
-          /* Top panel shows content starting from top */
+          /* Top panel starts at row 1 */
+          margin-top: 0;
         }
         
         .fold-panel-1 .fold-content { 
-          /* Middle panel shows content offset by panel height */
+          /* Middle panel starts showing row 2 */
+          margin-top: -200px;
         }
         
         .fold-panel-2 .fold-content { 
-          /* Bottom panel shows content offset by two panel heights */
+          /* Bottom panel starts showing row 3 */
+          margin-top: -400px;
         }
         
         /* Row containers */
