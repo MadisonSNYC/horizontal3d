@@ -67,6 +67,7 @@ export default function PerspectiveGallery() {
   const scrollPositionRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [currentTileIndex, setCurrentTileIndex] = useState(0)
+  const [tileTransforms, setTileTransforms] = useState<{ [key: string]: string }>({})  // Store transform for each tile
   
   // Dev controls state
   const [settings, setSettings] = useState<PerspectiveSettings>({
@@ -148,6 +149,63 @@ export default function PerspectiveGallery() {
           }
         })
         
+        // Calculate smooth scaling for each tile based on its position
+        const transforms: { [key: string]: string } = {}
+        const viewportHeight = window.innerHeight
+        const topPanelBottom = viewportHeight * 0.2
+        const middlePanelTop = viewportHeight * 0.2
+        const middlePanelBottom = viewportHeight * 0.8
+        const bottomPanelTop = viewportHeight * 0.8
+        
+        // For each tile, calculate its position and apply smooth scaling
+        for (let i = 0; i < SAMPLE_PROJECT.tiles.length; i++) {
+          const row = Math.floor(i / 3)
+          const tileY = (row * 200) - position  // Base position of tile
+          
+          // Calculate the tile's center position relative to viewport
+          const tileCenterY = tileY + 100  // Assuming tile height of ~200px
+          
+          let scale = 1
+          
+          if (tileCenterY < topPanelBottom) {
+            // Tile is in top panel - small scale
+            scale = 0.5
+          } else if (tileCenterY >= middlePanelTop && tileCenterY <= middlePanelBottom) {
+            // Tile is in middle panel zone - interpolate to large scale
+            const middleProgress = (tileCenterY - middlePanelTop) / (middlePanelBottom - middlePanelTop)
+            
+            if (middleProgress < 0.2) {
+              // Entering middle panel - smooth transition from small to large
+              scale = 0.5 + (1.25 * (middleProgress * 5))
+            } else if (middleProgress > 0.8) {
+              // Leaving middle panel - smooth transition from large to small
+              scale = 1.75 - (1.25 * ((middleProgress - 0.8) * 5))
+            } else {
+              // Fully in middle panel - maximum scale
+              scale = 1.75
+            }
+          } else if (tileCenterY > bottomPanelTop) {
+            // Tile is in bottom panel - small scale
+            scale = 0.5
+          } else {
+            // Tile is in transition zones
+            if (tileCenterY < middlePanelTop) {
+              // Transition from top to middle
+              const progress = (tileCenterY - topPanelBottom) / (middlePanelTop - topPanelBottom)
+              scale = 0.5 + (1.25 * progress)
+            } else {
+              // Transition from middle to bottom
+              const progress = (tileCenterY - middlePanelBottom) / (bottomPanelTop - middlePanelBottom)
+              scale = 1.75 - (1.25 * progress)
+            }
+          }
+          
+          transforms[`panel-0-tile-${i}`] = `scale(${scale})`
+          transforms[`panel-1-tile-${i}`] = `scale(${scale})`
+          transforms[`panel-2-tile-${i}`] = `scale(${scale})`
+        }
+        
+        setTileTransforms(transforms)
         scrollPositionRef.current = position
         setCurrentTileIndex(Math.floor(position / scrollPerRow))
       }
@@ -277,18 +335,13 @@ export default function PerspectiveGallery() {
           place-items: center;
         }
         
-        /* Different grid settings for each panel */
+        /* Uniform grid settings - let transforms handle sizing */
         .fold-panel-0 .tile-wrapper,
+        .fold-panel-1 .tile-wrapper,
         .fold-panel-2 .tile-wrapper {
-          grid-auto-rows: 100px;
+          grid-auto-rows: 200px;
           column-gap: ${spacingSettings.colGap}px;
-          row-gap: 10px;
-        }
-        
-        .fold-panel-1 .tile-wrapper {
-          grid-auto-rows: 300px;
-          column-gap: ${spacingSettings.colGap * 2}px;
-          row-gap: 30px;
+          row-gap: 20px;
         }
         
         /* Seamless 3D fold effect with smooth transitions */
@@ -367,19 +420,11 @@ export default function PerspectiveGallery() {
           transform-origin: center center;
         }
         
-        /* Different tile sizes per panel */
-        .fold-panel-0 .tile-3d,
-        .fold-panel-2 .tile-3d {
-          max-width: calc(${tileSize}px * 0.5);
-          height: 80px;
-          font-size: 14px;
-        }
-        
-        .fold-panel-1 .tile-3d {
-          max-width: calc(${tileSize}px * 1.75);
-          height: 280px;
-          font-size: 24px;
-          font-weight: bold;
+        /* Base tile size - scaling handled by transforms */
+        .tile-3d {
+          max-width: ${tileSize}px;
+          height: 160px;
+          font-size: 18px;
         }
         
         
@@ -509,7 +554,9 @@ export default function PerspectiveGallery() {
                         key={`tile-${index}`}
                         className="tile-3d"
                         style={{ 
-                          '--tile-color': tile.color
+                          '--tile-color': tile.color,
+                          transform: tileTransforms[`panel-${panelIndex}-tile-${index}`] || 'scale(1)',
+                          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                         } as React.CSSProperties}
                       >
                         {tile.title}
