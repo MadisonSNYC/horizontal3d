@@ -88,6 +88,12 @@ export default function PerspectiveGallery() {
     containerHeight: 85
   })
   
+  // Panel position controls
+  const [panelPositions, setPanelPositions] = useState({
+    topRowPosition: 0,
+    bottomRowPosition: 80
+  })
+  
   const [tileSize, setTileSize] = useState(400) // Base tile max-width
   
   // Panel visual settings
@@ -281,9 +287,9 @@ export default function PerspectiveGallery() {
           row-gap: ${spacingSettings.rowGap}px;
         }
         
-        /* Seamless 3D fold effect with smooth transitions */
+        /* Seamless 3D fold effect with adjustable panel positions */
         .fold-panel-0 {
-          top: 0;
+          top: ${panelPositions.topRowPosition}%;
           transform-origin: bottom center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(${rowSettings.topBottom.rotateX}deg)
@@ -303,7 +309,7 @@ export default function PerspectiveGallery() {
         }
         
         .fold-panel-2 {
-          top: ${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}%;
+          top: ${panelPositions.bottomRowPosition}%;
           transform-origin: top center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(-${rowSettings.topBottom.rotateX}deg)
@@ -807,6 +813,35 @@ export default function PerspectiveGallery() {
               step="0.05"
               value={panelVisuals.bottomOpacity}
               onChange={(e) => setPanelVisuals(prev => ({ ...prev, bottomOpacity: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <h4>Panel Positions</h4>
+          <div className="control-group">
+            <label>
+              Top Row Position
+              <span className="control-value">{panelPositions.topRowPosition}%</span>
+            </label>
+            <input
+              type="range"
+              min="-20"
+              max="40"
+              value={panelPositions.topRowPosition}
+              onChange={(e) => setPanelPositions(prev => ({ ...prev, topRowPosition: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Bottom Row Position
+              <span className="control-value">{panelPositions.bottomRowPosition}%</span>
+            </label>
+            <input
+              type="range"
+              min="60"
+              max="120"
+              value={panelPositions.bottomRowPosition}
+              onChange={(e) => setPanelPositions(prev => ({ ...prev, bottomRowPosition: Number(e.target.value) }))}
             />
           </div>
           
