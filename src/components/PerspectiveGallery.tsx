@@ -89,8 +89,7 @@ export default function PerspectiveGallery() {
   // Video tile scaling controls
   const [videoScaling, setVideoScaling] = useState({
     minScale: 0.8,
-    maxScale: 1.3,
-    transitionDuration: 0.3
+    maxScale: 1.3
   })
   
   // Panel visual settings
@@ -303,6 +302,12 @@ export default function PerspectiveGallery() {
           box-sizing: border-box;
         }
         
+        /* Middle panel gets proportionally scaled spacing to maintain gaps with larger tiles */
+        .fold-panel-1 .tile-wrapper {
+          column-gap: ${spacingSettings.colGap * rowSettings.middle.scale}px;
+          row-gap: ${spacingSettings.rowGap * rowSettings.middle.scale}px;
+        }
+        
         /* CLEAN DEPTH - Z-axis layering with 3D fold effect (adapted from original) */
         .fold-panel-0 {
           top: calc(0% + ${panelVisuals.panelGap}px);
@@ -363,57 +368,17 @@ export default function PerspectiveGallery() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
+          font-size: 18px;
           font-weight: bold;
           color: white;
-          position: relative;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
           cursor: pointer;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
           aspect-ratio: 16 / 9;  /* Video format */
           width: 100%;
           max-width: ${tileSize}px;
           justify-self: center;
-          overflow: hidden;
           transform-origin: center center;
-          will-change: transform;
-        }
-        
-        .video-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: opacity 0.3s ease;
-        }
-        
-        .tile-3d:hover .video-overlay {
-          opacity: 0.8;
-        }
-        
-        .play-button {
-          width: 50px;
-          height: 50px;
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 20px;
-          color: #000;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .tile-title {
-          position: absolute;
-          bottom: 15px;
-          left: 15px;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-          z-index: 2;
         }
         
         /* Scale tiles in middle panel to expand with panel scale */
@@ -549,14 +514,10 @@ export default function PerspectiveGallery() {
                         className="tile-3d"
                         style={{ 
                           '--tile-color': tile.color,
-                          transform: `scale(${tileScales[`tile-${index}`] || 1})`,
-                          transition: `transform ${videoScaling.transitionDuration}s cubic-bezier(0.4, 0, 0.2, 1)`
+                          transform: `scale(${tileScales[`tile-${index}`] || 1})`
                         } as React.CSSProperties}
                       >
-                        <div className="video-overlay">
-                          <div className="play-button">▶</div>
-                        </div>
-                        <span className="tile-title">{tile.title}</span>
+                        {tile.title}
                       </div>
                     ))}
                   </div>
@@ -742,21 +703,6 @@ export default function PerspectiveGallery() {
               step="0.05"
               value={videoScaling.maxScale}
               onChange={(e) => setVideoScaling(prev => ({ ...prev, maxScale: Number(e.target.value) }))}
-            />
-          </div>
-          
-          <div className="control-group">
-            <label>
-              Transition Duration
-              <span className="control-value">{videoScaling.transitionDuration.toFixed(1)}s</span>
-            </label>
-            <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.1"
-              value={videoScaling.transitionDuration}
-              onChange={(e) => setVideoScaling(prev => ({ ...prev, transitionDuration: Number(e.target.value) }))}
             />
           </div>
           
