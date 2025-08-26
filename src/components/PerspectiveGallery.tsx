@@ -219,13 +219,14 @@ export default function PerspectiveGallery() {
                      rotateX(${settings.rotateX}deg)
                      rotateY(${settings.rotateY}deg)
                      rotateZ(${settings.rotateZ}deg);
+          overflow: hidden;  /* Hide overflow on wrapper level */
         }
         
         /* 3D fold panels (updated for vertical scroll) */
         .fold-panel {
           position: absolute;
           width: 100%;
-          overflow: hidden;
+          overflow: visible;  /* Allow content to run off edges for endless effect */
           left: 0;
           background: ${panelVisuals.panelBackground};
           border: none;
@@ -250,6 +251,8 @@ export default function PerspectiveGallery() {
           width: 100%;
           will-change: transform;
           transition: none;
+          padding-bottom: 200px;  /* Extra space for endless scroll effect */
+          padding-top: 200px;  /* Extra space at top too */
         }
         
         .tile-wrapper {
@@ -257,11 +260,19 @@ export default function PerspectiveGallery() {
           height: 100%;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(3, 1fr);
+          grid-template-rows: repeat(5, 1fr);  /* 5 rows now for extra tiles */
           column-gap: ${spacingSettings.colGap}px;
           row-gap: ${spacingSettings.rowGap}px;
           padding: 15px;
           box-sizing: border-box;
+        }
+        
+        /* Middle panel gets slightly more spacing */
+        .fold-panel-1 .tile-wrapper {
+          padding: 20px;
+          column-gap: ${spacingSettings.colGap * 1.2}px;
+          row-gap: ${spacingSettings.rowGap}px;
+          grid-template-rows: repeat(5, 1fr);  /* Match 5 rows */
         }
         
         /* CLEAN DEPTH - Z-axis layering with 3D fold effect (adapted from original) */
@@ -302,9 +313,20 @@ export default function PerspectiveGallery() {
         }
         
         /* Each panel shows different content offset for seamless vertical scroll */
-        .fold-panel-0 .fold-content { margin-top: 0; }
-        .fold-panel-1 .fold-content { margin-top: -25vh; }
-        .fold-panel-2 .fold-content { margin-top: -75vh; }
+        /* Top panel clips content at bottom edge for fold illusion */
+        .fold-panel-0 .fold-content { 
+          margin-top: -33.33%;  /* Start showing from middle section */
+        }
+        
+        /* Middle panel shows main content */
+        .fold-panel-1 .fold-content { 
+          margin-top: -66.66%;  /* Center the main tiles */
+        }
+        
+        /* Bottom panel shows content continuing from middle */
+        .fold-panel-2 .fold-content { 
+          margin-top: -100%;  /* Show bottom section */
+        }
         
         /* Row containers */
         .row-container {
@@ -328,18 +350,25 @@ export default function PerspectiveGallery() {
           font-weight: bold;
           color: white;
           text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-          transition: transform 0.3s ease;
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           aspect-ratio: 16 / 10;
           width: 100%;
-          max-width: ${tileSize}px;
           justify-self: center;
         }
         
-        /* Scale tiles in middle panel to expand with panel scale */
+        /* Tiles in top/bottom panels - smaller */
+        .fold-panel-0 .tile-3d,
+        .fold-panel-2 .tile-3d {
+          max-width: calc(${tileSize}px * ${rowSettings.topBottom.scale});
+        }
+        
+        /* Tiles in middle panel - expand but stay within bounds */
         .fold-panel-1 .tile-3d {
-          max-width: calc(${tileSize}px * ${rowSettings.middle.scale / rowSettings.topBottom.scale});
+          max-width: calc(${tileSize}px * ${rowSettings.middle.scale});
+          font-size: 20px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         
         
@@ -463,7 +492,17 @@ export default function PerspectiveGallery() {
               <div key={panelIndex} className={`fold-panel fold-panel-${panelIndex}`}>
                 <div className="fold-content">
                   <div className="tile-wrapper">
-                    {/* Single 3x3 grid of tiles */}
+                    {/* Extra tiles before for endless effect */}
+                    {SAMPLE_PROJECT.tiles.slice(-3).map((tile, index) => (
+                      <div
+                        key={`pre-tile-${index}`}
+                        className="tile-3d"
+                        style={{ '--tile-color': tile.color, opacity: 0.5 } as React.CSSProperties}
+                      >
+                        {tile.title.replace('1', '0')}
+                      </div>
+                    ))}
+                    {/* Main 3x3 grid of tiles */}
                     {SAMPLE_PROJECT.tiles.map((tile, index) => (
                       <div
                         key={`tile-${index}`}
@@ -471,6 +510,16 @@ export default function PerspectiveGallery() {
                         style={{ '--tile-color': tile.color } as React.CSSProperties}
                       >
                         {tile.title}
+                      </div>
+                    ))}
+                    {/* Extra tiles after for endless effect */}
+                    {SAMPLE_PROJECT.tiles.slice(0, 3).map((tile, index) => (
+                      <div
+                        key={`post-tile-${index}`}
+                        className="tile-3d"
+                        style={{ '--tile-color': tile.color, opacity: 0.5 } as React.CSSProperties}
+                      >
+                        {tile.title.replace('1', '2')}
                       </div>
                     ))}
                   </div>
