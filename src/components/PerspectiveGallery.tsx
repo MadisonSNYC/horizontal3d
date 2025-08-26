@@ -69,18 +69,32 @@ export default function PerspectiveGallery() {
   })
 
   const [rowSettings, setRowSettings] = useState<{ topBottom: RowSettings; middle: RowSettings }>({
-    topBottom: { translateZ: 100, rotateX: 25, rotateY: 0, scale: 0.95 },
+    topBottom: { translateZ: 228, rotateX: 19, rotateY: 0, scale: 0.95 },
     middle: { translateZ: 150, rotateX: 0, rotateY: 0, scale: 1.05 }
   })
 
   const [spacingSettings, setSpacingSettings] = useState<SpacingSettings>({
-    rowGap: 10,
+    rowGap: 4,
     colGap: 10,
     topRowHeight: 25,
     middleRowHeight: 50,
     bottomRowHeight: 25,
     containerWidth: 84,
     containerHeight: 82
+  })
+  
+  const [tileSize, setTileSize] = useState(400) // Base tile max-width
+  
+  // Panel visual settings
+  const [panelVisuals, setPanelVisuals] = useState({
+    panelGap: 0,
+    topShadow: 15,
+    middleShadow: 20,
+    bottomShadow: 8,
+    topOpacity: 1,
+    middleOpacity: 1,
+    bottomOpacity: 1,
+    panelBackground: 'transparent'
   })
 
   const updateSetting = (key: keyof PerspectiveSettings, value: number) => {
@@ -174,7 +188,7 @@ export default function PerspectiveGallery() {
         .perspective-container {
           width: 100vw;
           height: 100vh;
-          background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+          background: #000;
           overflow: hidden;
           position: relative;
         }
@@ -184,7 +198,7 @@ export default function PerspectiveGallery() {
           width: 100%;
           height: 100vh;
           position: relative;
-          background: #fafafa;
+          background: #000;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -213,21 +227,21 @@ export default function PerspectiveGallery() {
           width: 100%;
           overflow: hidden;
           left: 0;
-          background: transparent;
+          background: ${panelVisuals.panelBackground};
           border: none;
         }
         
-        /* Individual panel sizes */
+        /* Individual panel sizes with slight overlap to prevent gaps */
         .fold-panel-0 {
-          height: ${spacingSettings.topRowHeight}%;
+          height: calc(${spacingSettings.topRowHeight}% + 2px);
         }
         
         .fold-panel-1 {
-          height: ${spacingSettings.middleRowHeight}%;
+          height: calc(${spacingSettings.middleRowHeight}% + 2px);
         }
         
         .fold-panel-2 {
-          height: ${spacingSettings.bottomRowHeight}%;
+          height: calc(${spacingSettings.bottomRowHeight}% + 2px);
         }
         
         .fold-content {
@@ -244,40 +258,47 @@ export default function PerspectiveGallery() {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           grid-template-rows: repeat(3, 1fr);
-          gap: 8px;
+          column-gap: ${spacingSettings.colGap}px;
+          row-gap: ${spacingSettings.rowGap}px;
           padding: 15px;
           box-sizing: border-box;
         }
         
         /* CLEAN DEPTH - Z-axis layering with 3D fold effect (adapted from original) */
         .fold-panel-0 {
-          top: 0;
+          top: calc(0% + ${panelVisuals.panelGap}px);
           transform-origin: bottom center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(${rowSettings.topBottom.rotateX}deg)
                      rotateY(${rowSettings.topBottom.rotateY}deg)
                      scale(${rowSettings.topBottom.scale});
           z-index: 4;
+          opacity: ${panelVisuals.topOpacity};
+          box-shadow: 0 ${panelVisuals.topShadow}px ${panelVisuals.topShadow * 2.5}px rgba(0,0,0,${panelVisuals.topShadow * 0.012});
         }
         
         .fold-panel-1 {
-          top: ${spacingSettings.topRowHeight}%;
+          top: calc(${spacingSettings.topRowHeight}% + ${panelVisuals.panelGap}px);
           transform-origin: center center;
           transform: translate3d(0, 0, ${rowSettings.middle.translateZ}px)
                      rotateX(${rowSettings.middle.rotateX}deg)
                      rotateY(${rowSettings.middle.rotateY}deg)
                      scale(${rowSettings.middle.scale});
           z-index: 3;
+          opacity: ${panelVisuals.middleOpacity};
+          box-shadow: 0 ${panelVisuals.middleShadow}px ${panelVisuals.middleShadow * 2.5}px rgba(0,0,0,${panelVisuals.middleShadow * 0.011});
         }
         
         .fold-panel-2 {
-          top: ${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}%;
+          top: calc(${spacingSettings.topRowHeight + spacingSettings.middleRowHeight}% + ${panelVisuals.panelGap * 2}px);
           transform-origin: top center;
           transform: translate3d(0, 0, ${rowSettings.topBottom.translateZ}px) 
                      rotateX(-${rowSettings.topBottom.rotateX}deg)
                      rotateY(${rowSettings.topBottom.rotateY}deg)
                      scale(${rowSettings.topBottom.scale});
           z-index: 2;
+          opacity: ${panelVisuals.bottomOpacity};
+          box-shadow: 0 ${panelVisuals.bottomShadow}px ${panelVisuals.bottomShadow * 2.5}px rgba(0,0,0,${panelVisuals.bottomShadow * 0.01});
         }
         
         /* Each panel shows different content offset for seamless vertical scroll */
@@ -312,8 +333,13 @@ export default function PerspectiveGallery() {
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           aspect-ratio: 16 / 10;
           width: 100%;
-          max-width: 400px;
+          max-width: ${tileSize}px;
           justify-self: center;
+        }
+        
+        /* Scale tiles in middle panel to expand with panel scale */
+        .fold-panel-1 .tile-3d {
+          max-width: calc(${tileSize}px * ${rowSettings.middle.scale / rowSettings.topBottom.scale});
         }
         
         
@@ -599,6 +625,151 @@ export default function PerspectiveGallery() {
               step="0.01"
               value={rowSettings.middle.scale}
               onChange={(e) => updateRowSetting('middle', 'scale', Number(e.target.value))}
+            />
+          </div>
+          
+          <h4>Tile Settings</h4>
+          <div className="control-group">
+            <label>
+              Tile Size
+              <span className="control-value">{tileSize}px</span>
+            </label>
+            <input
+              type="range"
+              min="200"
+              max="600"
+              value={tileSize}
+              onChange={(e) => setTileSize(Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Row Gap
+              <span className="control-value">{spacingSettings.rowGap}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="30"
+              value={spacingSettings.rowGap}
+              onChange={(e) => updateSpacingSetting('rowGap', Number(e.target.value))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Column Gap
+              <span className="control-value">{spacingSettings.colGap}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="30"
+              value={spacingSettings.colGap}
+              onChange={(e) => updateSpacingSetting('colGap', Number(e.target.value))}
+            />
+          </div>
+          
+          <h4>Panel Visual Effects</h4>
+          <div className="control-group">
+            <label>
+              Panel Gap
+              <span className="control-value">{panelVisuals.panelGap}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="50"
+              value={panelVisuals.panelGap}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, panelGap: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Top Shadow
+              <span className="control-value">{panelVisuals.topShadow}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="50"
+              value={panelVisuals.topShadow}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, topShadow: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Middle Shadow
+              <span className="control-value">{panelVisuals.middleShadow}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="50"
+              value={panelVisuals.middleShadow}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, middleShadow: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Bottom Shadow
+              <span className="control-value">{panelVisuals.bottomShadow}px</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="50"
+              value={panelVisuals.bottomShadow}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, bottomShadow: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Top Opacity
+              <span className="control-value">{panelVisuals.topOpacity.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={panelVisuals.topOpacity}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, topOpacity: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Middle Opacity
+              <span className="control-value">{panelVisuals.middleOpacity.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={panelVisuals.middleOpacity}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, middleOpacity: Number(e.target.value) }))}
+            />
+          </div>
+          
+          <div className="control-group">
+            <label>
+              Bottom Opacity
+              <span className="control-value">{panelVisuals.bottomOpacity.toFixed(2)}</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={panelVisuals.bottomOpacity}
+              onChange={(e) => setPanelVisuals(prev => ({ ...prev, bottomOpacity: Number(e.target.value) }))}
             />
           </div>
           
