@@ -33,23 +33,33 @@ interface ScrollSettings {
   momentum: boolean
 }
 
-// Tile data with 3x3 grid layout (following original pattern)
+// Tile data with multiple rows for scrolling
 const SAMPLE_PROJECT = {
   tiles: [
-    // Row 1 (Top)
+    // Row 1
     { id: 1, title: 'BERLIN 1', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
     { id: 2, title: 'TOKYO 1', color: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)' },
     { id: 3, title: 'NEW YORK 1', color: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
     
-    // Row 2 (Middle)
+    // Row 2
     { id: 4, title: 'PARIS 1', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
     { id: 5, title: 'LONDON 1', color: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)' },
     { id: 6, title: 'MILAN 1', color: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
     
-    // Row 3 (Bottom)
+    // Row 3
     { id: 7, title: 'DUBAI 1', color: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' },
     { id: 8, title: 'SYDNEY 1', color: 'linear-gradient(135deg, #c026d3 0%, #9333ea 100%)' },
-    { id: 9, title: 'MOSCOW 1', color: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)' }
+    { id: 9, title: 'MOSCOW 1', color: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)' },
+    
+    // Row 4
+    { id: 10, title: 'BERLIN 2', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
+    { id: 11, title: 'TOKYO 2', color: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)' },
+    { id: 12, title: 'NEW YORK 2', color: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
+    
+    // Row 5
+    { id: 13, title: 'PARIS 2', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
+    { id: 14, title: 'LONDON 2', color: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)' },
+    { id: 15, title: 'MILAN 2', color: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
   ]
 }
 
@@ -121,27 +131,29 @@ export default function PerspectiveGallery() {
       if (!wrapper) return
 
       const panels = wrapper.querySelectorAll('.fold-panel')
-      const totalTiles = SAMPLE_PROJECT.tiles.length
-      const scrollPerTile = 600
+      const totalRows = Math.ceil(SAMPLE_PROJECT.tiles.length / 3)
+      const rowHeight = 200 // Approximate height of each row
+      const scrollPerRow = rowHeight
 
       let currentScroll = 0
       let targetScroll = 0
       let animationFrame: number
 
       const updateScroll = (position: number) => {
-        panels.forEach((panel) => {
+        panels.forEach((panel, index) => {
           const content = panel.querySelector('.fold-content') as HTMLElement
           if (content) {
+            // All panels show the same content position for synchronized scrolling
             content.style.transform = `translateY(${-position}px)`
           }
         })
         
         scrollPositionRef.current = position
-        setCurrentTileIndex(Math.min(Math.floor(position / scrollPerTile), totalTiles - 4))
+        setCurrentTileIndex(Math.floor(position / scrollPerRow))
       }
 
       const animate = () => {
-        const maxScroll = Math.max(0, (totalTiles - 4) * scrollPerTile)
+        const maxScroll = Math.max(0, (totalRows - 1) * scrollPerRow)
         targetScroll = Math.max(0, Math.min(maxScroll, targetScroll))
         
         const diff = targetScroll - currentScroll
@@ -155,11 +167,11 @@ export default function PerspectiveGallery() {
       animate()
 
       window.nextTile = () => {
-        targetScroll += scrollPerTile
+        targetScroll += scrollPerRow
       }
 
       window.prevTile = () => {
-        targetScroll -= scrollPerTile
+        targetScroll -= scrollPerRow
       }
 
       const handleWheel = (e: WheelEvent) => {
@@ -254,10 +266,9 @@ export default function PerspectiveGallery() {
         
         .tile-wrapper {
           width: 100%;
-          height: 100%;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(3, 1fr);
+          grid-auto-rows: minmax(150px, auto);
           column-gap: ${spacingSettings.colGap}px;
           row-gap: ${spacingSettings.rowGap}px;
           padding: 15px;
@@ -308,30 +319,17 @@ export default function PerspectiveGallery() {
           box-shadow: 0 ${panelVisuals.bottomShadow}px ${panelVisuals.bottomShadow * 2.5}px rgba(0,0,0,${panelVisuals.bottomShadow * 0.01});
         }
         
-        /* Each panel shows different rows */
-        /* Top panel only shows top row */
-        .fold-panel-0 .tile-wrapper {
-          grid-template-rows: 1fr;
-        }
-        .fold-panel-0 .tile-3d:nth-child(n+4) {
-          display: none;
+        /* Each panel shows the same scrolling content but from different offsets */
+        .fold-panel-0 .fold-content { 
+          /* Top panel shows content starting from top */
         }
         
-        /* Middle panel only shows middle row */
-        .fold-panel-1 .tile-wrapper {
-          grid-template-rows: 1fr;
-        }
-        .fold-panel-1 .tile-3d:nth-child(-n+3),
-        .fold-panel-1 .tile-3d:nth-child(n+7) {
-          display: none;
+        .fold-panel-1 .fold-content { 
+          /* Middle panel shows content offset by panel height */
         }
         
-        /* Bottom panel only shows bottom row */
-        .fold-panel-2 .tile-wrapper {
-          grid-template-rows: 1fr;
-        }
-        .fold-panel-2 .tile-3d:nth-child(-n+6) {
-          display: none;
+        .fold-panel-2 .fold-content { 
+          /* Bottom panel shows content offset by two panel heights */
         }
         
         /* Row containers */
@@ -524,7 +522,7 @@ export default function PerspectiveGallery() {
             ← PREVIOUS
           </button>
           <span className="control-info">
-            Viewing tiles {currentTileIndex + 1}-{Math.min(currentTileIndex + 4, SAMPLE_PROJECT.tiles.length)} of {SAMPLE_PROJECT.tiles.length}
+            Row {currentTileIndex + 1} of {Math.ceil(SAMPLE_PROJECT.tiles.length / 3)}
           </span>
           <button className="control-btn" onClick={() => window.nextTile?.()}>
             NEXT →
