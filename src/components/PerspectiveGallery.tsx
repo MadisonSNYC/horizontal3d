@@ -86,9 +86,9 @@ export default function PerspectiveGallery() {
   const [spacingSettings, setSpacingSettings] = useState<SpacingSettings>({
     rowGap: 4,
     colGap: 10,
-    topRowHeight: 33,
-    middleRowHeight: 34,
-    bottomRowHeight: 33,
+    topRowHeight: 20,
+    middleRowHeight: 60,
+    bottomRowHeight: 20,
     containerWidth: 90,
     containerHeight: 85
   })
@@ -277,10 +277,18 @@ export default function PerspectiveGallery() {
           place-items: center;
         }
         
-        /* Middle panel gets proportionally scaled spacing to maintain gaps with larger tiles */
+        /* Different grid settings for each panel */
+        .fold-panel-0 .tile-wrapper,
+        .fold-panel-2 .tile-wrapper {
+          grid-auto-rows: 100px;
+          column-gap: ${spacingSettings.colGap}px;
+          row-gap: 10px;
+        }
+        
         .fold-panel-1 .tile-wrapper {
-          column-gap: ${spacingSettings.colGap * rowSettings.middle.scale}px;
-          row-gap: ${spacingSettings.rowGap * rowSettings.middle.scale}px;
+          grid-auto-rows: 300px;
+          column-gap: ${spacingSettings.colGap * 2}px;
+          row-gap: 30px;
         }
         
         /* Seamless 3D fold effect with smooth transitions */
@@ -348,26 +356,30 @@ export default function PerspectiveGallery() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 18px;
-          font-weight: bold;
           color: white;
           text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
           cursor: pointer;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
           aspect-ratio: 16 / 9;  /* Video format */
           width: 100%;
-          height: 160px;
-          max-width: ${tileSize}px;
           justify-self: center;
           align-self: center;
           transform-origin: center center;
         }
         
-        /* Tiles maintain consistent size across panels for seamless flow */
+        /* Different tile sizes per panel */
         .fold-panel-0 .tile-3d,
-        .fold-panel-1 .tile-3d,
         .fold-panel-2 .tile-3d {
-          max-width: ${tileSize}px;
+          max-width: calc(${tileSize}px * 0.5);
+          height: 80px;
+          font-size: 14px;
+        }
+        
+        .fold-panel-1 .tile-3d {
+          max-width: calc(${tileSize}px * 1.75);
+          height: 280px;
+          font-size: 24px;
+          font-weight: bold;
         }
         
         
