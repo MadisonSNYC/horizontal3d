@@ -57,7 +57,6 @@ export default function PerspectiveGallery() {
   const scrollPositionRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const [currentTileIndex, setCurrentTileIndex] = useState(0)
-  const [tileScales, setTileScales] = useState<{ [key: string]: number }>({})  // Track individual tile scales
   
   // Dev controls state
   const [settings, setSettings] = useState<PerspectiveSettings>({
@@ -85,12 +84,6 @@ export default function PerspectiveGallery() {
   })
   
   const [tileSize, setTileSize] = useState(400) // Base tile max-width
-  
-  // Video tile scaling controls
-  const [videoScaling, setVideoScaling] = useState({
-    minScale: 0.8,
-    maxScale: 1.3
-  })
   
   // Panel visual settings
   const [panelVisuals, setPanelVisuals] = useState({
@@ -143,37 +136,6 @@ export default function PerspectiveGallery() {
           }
         })
         
-        // Calculate tile scales based on position
-        const newScales: { [key: string]: number } = {}
-        const middlePanelTop = window.innerHeight * 0.25  // 25% from top
-        const middlePanelBottom = window.innerHeight * 0.75  // 75% from top
-        const middlePanelCenter = window.innerHeight * 0.5
-        
-        // For each tile, calculate its screen position and scale
-        for (let i = 0; i < totalTiles; i++) {
-          const tileRow = Math.floor(i / 3)
-          const tileYOffset = tileRow * 200  // Approximate tile height + gap
-          const tileScreenY = tileYOffset - position + (window.innerHeight * 0.25)  // Adjusted for panel offset
-          
-          // Calculate distance from middle panel center
-          const distanceFromCenter = Math.abs(tileScreenY - middlePanelCenter)
-          const maxDistance = window.innerHeight * 0.4
-          
-          // Scale calculation: closer to center = larger
-          let scale = 1.0
-          if (tileScreenY >= middlePanelTop && tileScreenY <= middlePanelBottom) {
-            // Tile is in middle panel zone
-            const normalizedDistance = Math.max(0, 1 - (distanceFromCenter / maxDistance))
-            scale = videoScaling.minScale + ((videoScaling.maxScale - videoScaling.minScale) * normalizedDistance)
-          } else {
-            // Tile is outside middle panel
-            scale = videoScaling.minScale
-          }
-          
-          newScales[`tile-${i}`] = scale
-        }
-        
-        setTileScales(newScales)
         scrollPositionRef.current = position
         setCurrentTileIndex(Math.min(Math.floor(position / scrollPerTile), totalTiles - 4))
       }
@@ -381,9 +343,17 @@ export default function PerspectiveGallery() {
           transform-origin: center center;
         }
         
-        /* Scale tiles in middle panel to expand with panel scale */
+        /* Tiles in middle panel are larger */
         .fold-panel-1 .tile-3d {
-          max-width: calc(${tileSize}px * ${rowSettings.middle.scale / rowSettings.topBottom.scale});
+          max-width: calc(${tileSize}px * 1.3);
+          font-size: 20px;
+        }
+        
+        /* Tiles in top/bottom panels are smaller */
+        .fold-panel-0 .tile-3d,
+        .fold-panel-2 .tile-3d {
+          max-width: calc(${tileSize}px * 0.9);
+          font-size: 16px;
         }
         
         
@@ -513,8 +483,7 @@ export default function PerspectiveGallery() {
                         key={`tile-${index}`}
                         className="tile-3d"
                         style={{ 
-                          '--tile-color': tile.color,
-                          transform: `scale(${tileScales[`tile-${index}`] || 1})`
+                          '--tile-color': tile.color
                         } as React.CSSProperties}
                       >
                         {tile.title}
@@ -672,37 +641,6 @@ export default function PerspectiveGallery() {
               step="0.01"
               value={rowSettings.middle.scale}
               onChange={(e) => updateRowSetting('middle', 'scale', Number(e.target.value))}
-            />
-          </div>
-          
-          <h4>Video Tile Scaling</h4>
-          <div className="control-group">
-            <label>
-              Min Scale
-              <span className="control-value">{videoScaling.minScale.toFixed(2)}</span>
-            </label>
-            <input
-              type="range"
-              min="0.5"
-              max="1.0"
-              step="0.05"
-              value={videoScaling.minScale}
-              onChange={(e) => setVideoScaling(prev => ({ ...prev, minScale: Number(e.target.value) }))}
-            />
-          </div>
-          
-          <div className="control-group">
-            <label>
-              Max Scale
-              <span className="control-value">{videoScaling.maxScale.toFixed(2)}</span>
-            </label>
-            <input
-              type="range"
-              min="1.0"
-              max="2.0"
-              step="0.05"
-              value={videoScaling.maxScale}
-              onChange={(e) => setVideoScaling(prev => ({ ...prev, maxScale: Number(e.target.value) }))}
             />
           </div>
           
