@@ -33,33 +33,28 @@ interface ScrollSettings {
   momentum: boolean
 }
 
-// Tile data with multiple rows for scrolling
+// Tile data with 2 cards per row
 const SAMPLE_PROJECT = {
   tiles: [
     // Row 1
     { id: 1, title: 'BERLIN 1', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
     { id: 2, title: 'TOKYO 1', color: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)' },
-    { id: 3, title: 'NEW YORK 1', color: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
     
     // Row 2
-    { id: 4, title: 'PARIS 1', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
-    { id: 5, title: 'LONDON 1', color: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)' },
-    { id: 6, title: 'MILAN 1', color: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
+    { id: 3, title: 'PARIS 1', color: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
+    { id: 4, title: 'LONDON 1', color: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)' },
     
     // Row 3
-    { id: 7, title: 'DUBAI 1', color: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' },
-    { id: 8, title: 'SYDNEY 1', color: 'linear-gradient(135deg, #c026d3 0%, #9333ea 100%)' },
-    { id: 9, title: 'MOSCOW 1', color: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)' },
+    { id: 5, title: 'DUBAI 1', color: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
+    { id: 6, title: 'SYDNEY 1', color: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' },
     
     // Row 4
-    { id: 10, title: 'BERLIN 2', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
-    { id: 11, title: 'TOKYO 2', color: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)' },
-    { id: 12, title: 'NEW YORK 2', color: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
+    { id: 7, title: 'MILAN 1', color: 'linear-gradient(135deg, #c026d3 0%, #9333ea 100%)' },
+    { id: 8, title: 'MOSCOW 1', color: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)' },
     
     // Row 5
-    { id: 13, title: 'PARIS 2', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
-    { id: 14, title: 'LONDON 2', color: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)' },
-    { id: 15, title: 'MILAN 2', color: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
+    { id: 9, title: 'BERLIN 2', color: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' },
+    { id: 10, title: 'TOKYO 2', color: 'linear-gradient(135deg, #d97706 0%, #92400e 100%)' },
   ]
 }
 
@@ -131,7 +126,7 @@ export default function PerspectiveGallery() {
       if (!wrapper) return
 
       const panels = wrapper.querySelectorAll('.fold-panel')
-      const totalRows = Math.ceil(SAMPLE_PROJECT.tiles.length / 3)
+      const totalRows = Math.ceil(SAMPLE_PROJECT.tiles.length / 2) // 2 tiles per row now
       const rowHeight = Math.round((400 * 1.5) * 9 / 16 + 20) // Match calculated grid row height
       const scrollPerRow = rowHeight + spacingSettings.rowGap // Include gap
 
@@ -268,7 +263,7 @@ export default function PerspectiveGallery() {
         .tile-wrapper {
           width: 100%;
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(2, 1fr);
           grid-auto-rows: 180px;
           column-gap: ${spacingSettings.colGap}px;
           row-gap: 20px;
@@ -528,7 +523,7 @@ export default function PerspectiveGallery() {
             ← PREVIOUS
           </button>
           <span className="control-info">
-            Row {currentTileIndex + 1} of {Math.ceil(SAMPLE_PROJECT.tiles.length / 3)}
+            Row {currentTileIndex + 1} of {Math.ceil(SAMPLE_PROJECT.tiles.length / 2)}
           </span>
           <button className="control-btn" onClick={() => window.nextTile?.()}>
             NEXT →
