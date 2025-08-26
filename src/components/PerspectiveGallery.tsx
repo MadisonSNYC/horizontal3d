@@ -132,7 +132,7 @@ export default function PerspectiveGallery() {
 
       const panels = wrapper.querySelectorAll('.fold-panel')
       const totalRows = Math.ceil(SAMPLE_PROJECT.tiles.length / 3)
-      const rowHeight = 240 // Match the grid row height
+      const rowHeight = Math.round((400 * 1.5) * 9 / 16 + 20) // Match calculated grid row height
       const scrollPerRow = rowHeight + spacingSettings.rowGap // Include gap
 
       let currentScroll = 0
@@ -281,7 +281,7 @@ export default function PerspectiveGallery() {
         .fold-panel-0 .tile-wrapper,
         .fold-panel-1 .tile-wrapper,
         .fold-panel-2 .tile-wrapper {
-          grid-auto-rows: 240px;  /* Uniform row height matching tile heights */
+          grid-auto-rows: calc((${tileSize}px * 1.5) * 9 / 16 + 20px);  /* Row height for largest tiles + gap */
           column-gap: ${spacingSettings.colGap}px;
           row-gap: ${spacingSettings.rowGap}px;
         }
@@ -368,18 +368,16 @@ export default function PerspectiveGallery() {
         
         .fold-panel-0 .tile-3d,
         .fold-panel-2 .tile-3d {
-          /* These tiles are rotated 15°, appearing compressed by cos(15°) = 0.966
-             To look 3.5x smaller than middle, actual height should be: */
+          /* Small tiles with 16:9 aspect ratio */
           max-width: calc(${tileSize}px * 0.6);
-          height: 220px;  /* Will appear as ~212px due to rotation */
+          height: calc((${tileSize}px * 0.6) * 9 / 16);  /* Maintain 16:9 ratio */
           font-size: 16px;
         }
         
         .fold-panel-1 .tile-3d {
-          /* Middle panel tiles at translateZ: 50px appear larger due to perspective
-             These need to visually appear 3.5x the compressed top/bottom tiles */
+          /* Large tiles with 16:9 aspect ratio */
           max-width: calc(${tileSize}px * 1.5);
-          height: 230px;  /* Actual height close to top/bottom for continuity */
+          height: calc((${tileSize}px * 1.5) * 9 / 16);  /* Maintain 16:9 ratio */
           font-size: 22px;
           font-weight: bold;
         }
